@@ -11,6 +11,8 @@
 ; is open, and click the Start button.  Then use On/Off
 ; buttons to play or stop the drones.
 ;
+; version 2.4 (12-Sep-2010):
+;	- bugfix from Mark Van Peteghem in the binauralize UDO
 ; version 2.3 (10-Sep-2010):
 ;	- fixes from Andres
 ; version 2.2 (09-Sep-2010):
@@ -159,7 +161,7 @@ ain,kcent,kdiff	xin
 ; determine pitches
 kp1		=		kcent + (kdiff/2)
 kp2		=		kcent - (kdiff/2)
-krat1	=		kp2 / kcent
+krat1	=		kp1 / kcent
 krat2	=		kp2 / kcent
 
 ; take it apart
@@ -367,9 +369,9 @@ e
 <bsbPanel>
  <label>Widgets</label>
  <objectName/>
- <x>896</x>
+ <x>876</x>
  <y>72</y>
- <width>470</width>
+ <width>490</width>
  <height>603</height>
  <visible>true</visible>
  <uuid/>
@@ -1954,7 +1956,7 @@ e
   <visible>true</visible>
   <midichan>0</midichan>
   <midicc>-3</midicc>
-  <label>Sruti/Drone Box 2.3</label>
+  <label>Sruti/Drone Box 2.4</label>
   <alignment>center</alignment>
   <font>Arial</font>
   <fontsize>11</fontsize>
@@ -2211,7 +2213,7 @@ Render: Real
 Ask: Yes
 Functions: ioObject
 Listing: Window
-WindowBounds: 896 72 470 603
+WindowBounds: 876 72 490 603
 CurrentView: io
 IOViewEdit: On
 Options:
@@ -2275,7 +2277,7 @@ ioSlider {273, 222} {150, 20} 0.000000 1.000000 0.010000 risset_offset
 ioText {307, 242} {80, 25} scroll 0.010000 0.010000 "risoff_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
 ioText {98, 291} {102, 27} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Binaural Beats
 ioText {318, 291} {60, 27} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Reverb
-ioText {161, 2} {110, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.3
+ioText {161, 2} {110, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.4
 ioText {139, 552} {160, 22} label 0.000000 0.00100 "" center "Arial" 10 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Dave Seidel <mysterybear.net/>
 </MacGUI>
 <EventPanel name="" tempo="60.00000000" loop="8.00000000" x="126" y="152" width="655" height="346" visible="true" loopStart="0" loopEnd="0">    </EventPanel>
