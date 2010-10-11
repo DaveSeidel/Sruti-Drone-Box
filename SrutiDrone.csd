@@ -11,6 +11,15 @@
 ; is open, and click the Start button.  Then use On/Off
 ; buttons to play or stop the drones.
 ;
+; version 2.6 (26-Sep-2010)
+;	- add level control for Risset effect (now labelled Harmonic Arpeggio);
+;	  this allows the use of binaural beating by itself
+;	- line up all effects horizontally
+;	- use SpinBox for Harmonic Arpeggio Offset and Binaural Beats BPS, for
+;	  finer control
+;	- normalize level controls to use 0.0-1.0 range
+;	- change multiplier for BB level from 5x to 4x, seems to match HA level better
+;	- layout tweakage
 ; version 2.5 (12-Sep-2010)
 ;	- add precision to the base freq. per David First
 ; version 2.4 (12-Sep-2010)
@@ -59,54 +68,60 @@ gaR		init	0
 ; waveform tables
 ;-------------------------------------------------------------------------
 
-giTblSz init    1048576
+giTblSz	init		1048576
 
 ; pure sine wave
-giFn1 ftgen   1, 0, giTblSz, 10, 1
+giFn1	ftgen	1, 0, giTblSz, 10, 1
 
 
 ; sawtooth wave  all partials (through 17) at a strength of 1/harmonic#
-giFn2 ftgen   2, 0, giTblSz, 10, 1, .5, .3333, .25, .2, .1667, .1428, .125, .111, .1, .0909, .0833, .077, .0714, .0667, .0625, .0588
+giFn2	ftgen	2, 0, giTblSz, 10, 1, .5, .3333, .25, .2, .1667, .1428, .125, .111, .1, .0909, .0833, .077, .0714, .0667, .0625, .0588
 
 ; first 13 partials, strength = 1/n + 1/(n-1)
-giFn3 ftgen   3, 0, giTblSz, 10, 1, 1.5,  .8333, .58, .45, .367, .31, .268,  .236, .211, .1909, .1742, .1603
+giFn3	ftgen	3, 0, giTblSz, 10, 1, 1.5,  .8333, .58, .45, .367, .31, .268,  .236, .211, .1909, .1742, .1603
 
 
 ; square wave  odd partials (through 19) at a strength of 1/harmonic#
-giFn4 ftgen   4, 0, giTblSz, 9,  1,1,0,  3,.3333,0, 5,.2,0,     7,.1428,0, 9,.111,0,  11,.0909,0,  13,.077,0,  15,.0667,0,  17,.0588,0,  19,.0526,0
+giFn4	ftgen	4, 0, giTblSz, 9,  1,1,0,  3,.3333,0, 5,.2,0,     7,.1428,0, 9,.111,0,  11,.0909,0,  13,.077,0,  15,.0667,0,  17,.0588,0,  19,.0526,0
 
 ; odd partials to 19, strength = 1/n, where n is ordinal to the odd set
-giFn5 ftgen   5, 0, giTblSz, 9,  1,1,0,  3,.5,0,    5,.3333,0,  7,.25,0,   9,.2,0,    11,.1667,0,  13,.1429,0, 15,.125,0,   17,.1111,0,  19,.1,0
+giFn5	ftgen	5, 0, giTblSz, 9,  1,1,0,  3,.5,0,    5,.3333,0,  7,.25,0,   9,.2,0,    11,.1667,0,  13,.1429,0, 15,.125,0,   17,.1111,0,  19,.1,0
 
 
 ; prime partials to 23, strength = 1/n
-giFn6 ftgen   6, 0, giTblSz, 9,  1,1,0,  2,.5,0,  3,.3333,0,  5,.2,0,    7,.143,0,  11,.0909,0,  13,.077,0,   17,.0588,0,  19,.0526,0, 23,.0435,0, 27,.037,0
+giFn6	ftgen	6, 0, giTblSz, 9,  1,1,0,  2,.5,0,  3,.3333,0,  5,.2,0,    7,.143,0,  11,.0909,0,  13,.077,0,   17,.0588,0,  19,.0526,0, 23,.0435,0, 27,.037,0
 
 ; primes to 23, strength = 1/n, where n is ordinal to the prime set
-giFn7 ftgen   7, 0, giTblSz, 9,  1,1,0,  2,.5,0,  3,.3333,0,  5,.25,0,   7,.20,0,   11,.1667,0,  13,.1429,0,  17,.125,0,   19,.1111,0, 23,.1,0,    27,.0909,0
+giFn7	ftgen	7, 0, giTblSz, 9,  1,1,0,  2,.5,0,  3,.3333,0,  5,.25,0,   7,.20,0,   11,.1667,0,  13,.1429,0,  17,.125,0,   19,.1111,0, 23,.1,0,    27,.0909,0
 
 
 ; partials in the Fibonacci series to 89, strength = 1/n
-giFn8 ftgen   8, 0, giTblSz, 9,  1,1,0,   2,.5,0,   3,.3333,0,  5,.2,0,   8,.125,0,  13,.0769,0,  21,.0476,0,  34,.0294,0,  55,.0182,0,  89,.0112,0 144,.0069,0
+giFn8	ftgen	8, 0, giTblSz, 9,  1,1,0,   2,.5,0,   3,.3333,0,  5,.2,0,   8,.125,0,  13,.0769,0,  21,.0476,0,  34,.0294,0,  55,.0182,0,  89,.0112,0 144,.0069,0
 
 ; fibs to 89, strength = 1/n, where n is ordinal to the fib set
-giFn9 ftgen   9, 0, giTblSz, 9,  1,1,0,   2,.5,0,   3,.3333,0,  5,.25,0,  8,.2,0,    13,.1667,0,  21,.1429,0,  34,.125,0,   55,.1111,0,  89,.1,0,   144,.0909,0
+giFn9	ftgen	9, 0, giTblSz, 9,  1,1,0,   2,.5,0,   3,.3333,0,  5,.25,0,  8,.2,0,    13,.1667,0,  21,.1429,0,  34,.125,0,   55,.1111,0,  89,.1,0,   144,.0909,0
 
 
 ; David First's "asymptotic sawtooth wave"
-giFn10 ftgen 10, 0, giTblSz, 9,  1,1,0,   1.732050807568877,.5773502691896259,0,   2.449489742783178,.408248290463863,0,   3.162277660168379,.3162277660168379,0,   3.872983346207417,.2581988897471611,0,   4.58257569495584,.2182178902359924,0,   5.291502622129182,.1889822365046136,0, 6,.1666666666666667,0,   6.70820393249937,.1490711984999859,0,   7.416198487095663,.1348399724926484,0,   8.124038404635961,.1230914909793327,0,   9.539392014169456,.1048284836721918,0,  10.2469507659596,.0975900072948533,0,  10.95445115010332,.0912870929175277,0,   11.6619037896906,.0857492925712544,0
+giFn10	ftgen	10, 0, giTblSz, 9,  1,1,0,   1.732050807568877,.5773502691896259,0,   2.449489742783178,.408248290463863,0,   3.162277660168379,.3162277660168379,0,   3.872983346207417,.2581988897471611,0,   4.58257569495584,.2182178902359924,0,   5.291502622129182,.1889822365046136,0, 6,.1666666666666667,0,   6.70820393249937,.1490711984999859,0,   7.416198487095663,.1348399724926484,0,   8.124038404635961,.1230914909793327,0,   9.539392014169456,.1048284836721918,0,  10.2469507659596,.0975900072948533,0,  10.95445115010332,.0912870929175277,0,   11.6619037896906,.0857492925712544,0
 
 ;-------------------------------------------------------------------------
 ; basic offset value for Risset effect
 ;-------------------------------------------------------------------------
 
-giofs   init    .01
+giofs   	init		.01
+
+;-------------------------------------------------------------------------
+; multipler for binaural beat level
+;-------------------------------------------------------------------------
+
+gibblvl	init    	4
 
 ;-------------------------------------------------------------------------
 ; FFT size for pvsanal
 ;-------------------------------------------------------------------------
 
-gifftsz	init	2048
+gifftsz	init		2048
 
 ;-------------------------------------------------------------------------
 ; initialize globals for values from UI
@@ -254,12 +269,11 @@ ifrac	=		inum/iden
 kfreq	=		ibase*ifrac
 
 koff		invalue	"risset_offset"
-		outvalue	"risoff_display", koff
 ;ioff	=		p10						; same offset for all
 ;ioff	=		ifrac*p10					; proportional to interval
-koff		=		((iden*2)/inum)*koff		; inversely proportional to ratio
+koff0	=		((iden*2)/inum)*koff		; inversely proportional to ratio
 
-koff1	=		koff						; oscillator offset for arpeggio
+koff1	=		koff0					; oscillator offset for arpeggio
 koff2	=		2*koff					; .
 koff3	=		3*koff					; .
 koff4	=		4*koff					; .
@@ -276,14 +290,13 @@ a7		poscil3	kenv, kfreq-koff2, itbl
 a8		poscil3	kenv, kfreq-koff3, itbl
 a9		poscil3	kenv, kfreq-koff4, itbl
 
+krismix	invalue	"risset_mix"
 aout		sum		a1, a2, a3, a4, a5, a6, a7, a8, a9
-a1L,a1R	pan_equal_power	aout, ipan
+a1L,a1R	pan_equal_power	aout*krismix, ipan
 
-kbbrate	invalue	"bb_rate"
-		outvalue	"bbrate_display", kbbrate
 kbbmix	invalue	"bb_mix"
-		outvalue	"bbmix_display", kbbmix
-a2L,a2R	binauralize	a1*kbbmix, kfreq, kbbrate
+kbbrate	invalue	"bb_rate"
+a2L,a2R	binauralize	a1*(kbbmix*gibblvl), kfreq, kbbrate
 
 gaL		=		gaL+a1L+a2L
 gaR		=		gaR+a1R+a2R
@@ -371,9 +384,9 @@ e
 <bsbPanel>
  <label>Widgets</label>
  <objectName/>
- <x>876</x>
+ <x>763</x>
  <y>72</y>
- <width>490</width>
+ <width>603</width>
  <height>603</height>
  <visible>true</visible>
  <uuid/>
@@ -438,7 +451,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>2</value>
+  <value>9</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -496,7 +509,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>1</value>
+  <value>8</value>
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>d_2</objectName>
@@ -525,7 +538,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>2</value>
+  <value>4</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -583,7 +596,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>3</value>
+  <value>7</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -641,7 +654,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>3</value>
+  <value>2</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -699,7 +712,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>4</value>
+  <value>3</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -848,8 +861,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBButton">
   <objectName>_Play</objectName>
-  <x>112</x>
-  <y>504</y>
+  <x>69</x>
+  <y>524</y>
   <width>100</width>
   <height>30</height>
   <uuid>{2f45e5ba-8d31-47a1-abfd-284ee246c74d}</uuid>
@@ -867,8 +880,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBButton">
   <objectName>btn_stop</objectName>
-  <x>219</x>
-  <y>504</y>
+  <x>176</x>
+  <y>524</y>
   <width>100</width>
   <height>30</height>
   <uuid>{8cfc7c9f-c14b-4e0a-969e-8c73d0e76eca}</uuid>
@@ -911,7 +924,7 @@ e
   <minimum>1</minimum>
   <maximum>20000</maximum>
   <randomizable group="0">false</randomizable>
-  <value>63.992</value>
+  <value>60</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -999,12 +1012,12 @@ e
     <stringvalue/>
    </bsbDropdownItem>
    <bsbDropdownItem>
-    <name>  Asymp Saw</name>
+    <name>  Asymptotic Saw</name>
     <value>9</value>
     <stringvalue/>
    </bsbDropdownItem>
   </bsbDropdownItemList>
-  <selectedIndex>5</selectedIndex>
+  <selectedIndex>9</selectedIndex>
   <randomizable group="0">false</randomizable>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
@@ -1038,8 +1051,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>242</x>
-  <y>354</y>
+  <x>389</x>
+  <y>355</y>
   <width>67</width>
   <height>25</height>
   <uuid>{2438c973-bcba-42b8-88c3-7adcaed53eb1}</uuid>
@@ -1092,7 +1105,7 @@ e
   <minimum>-6</minimum>
   <maximum>6</maximum>
   <randomizable group="0">false</randomizable>
-  <value>1</value>
+  <value>2</value>
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>8ve_2</objectName>
@@ -1393,8 +1406,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>36</x>
-  <y>432</y>
+  <x>206</x>
+  <y>435</y>
   <width>60</width>
   <height>25</height>
   <uuid>{f0263ce2-9501-41a2-b3ab-203447d7ec93}</uuid>
@@ -1422,8 +1435,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>45</x>
-  <y>354</y>
+  <x>215</x>
+  <y>356</y>
   <width>70</width>
   <height>25</height>
   <uuid>{4e5e56dd-ef75-421b-9168-48c7a3c2f396}</uuid>
@@ -1451,8 +1464,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBKnob">
   <objectName>bb_mix</objectName>
-  <x>113</x>
-  <y>321</y>
+  <x>283</x>
+  <y>324</y>
   <width>80</width>
   <height>80</height>
   <uuid>{0764d8d5-22a9-489d-8ae5-4e19e0567038}</uuid>
@@ -1460,8 +1473,8 @@ e
   <midichan>0</midichan>
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
-  <maximum>5.00000000</maximum>
-  <value>2.05000000</value>
+  <maximum>1.00000000</maximum>
+  <value>1.00000000</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>0.01000000</resolution>
@@ -1601,8 +1614,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBKnob">
   <objectName>reverb_feedback</objectName>
-  <x>309</x>
-  <y>321</y>
+  <x>456</x>
+  <y>324</y>
   <width>80</width>
   <height>80</height>
   <uuid>{77d49f7c-db91-404a-bede-14601a37da3d}</uuid>
@@ -1611,7 +1624,7 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
-  <value>0.86000000</value>
+  <value>0.92000000</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>0.01000000</resolution>
@@ -1619,15 +1632,15 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>303</x>
-  <y>195</y>
-  <width>90</width>
-  <height>27</height>
+  <x>68</x>
+  <y>292</y>
+  <width>130</width>
+  <height>30</height>
   <uuid>{f20e492d-a935-480f-b37f-8bce3552de37}</uuid>
   <visible>true</visible>
   <midichan>0</midichan>
   <midicc>-3</midicc>
-  <label>Risset Offset</label>
+  <label>Harmonic Arpeggio</label>
   <alignment>center</alignment>
   <font>Arial</font>
   <fontsize>14</fontsize>
@@ -1648,8 +1661,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>248</x>
-  <y>432</y>
+  <x>395</x>
+  <y>435</y>
   <width>42</width>
   <height>26</height>
   <uuid>{69b5965f-ef1f-449f-9e76-0f2c7ba86ae5}</uuid>
@@ -1677,8 +1690,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBScrollNumber">
   <objectName>feedback_display</objectName>
-  <x>309</x>
-  <y>401</y>
+  <x>456</x>
+  <y>404</y>
   <width>80</width>
   <height>25</height>
   <uuid>{bbaf98ce-16fe-4bea-82db-1aa7909b40bd}</uuid>
@@ -1698,7 +1711,7 @@ e
    <g>0</g>
    <b>0</b>
   </bgcolor>
-  <value>0.86000000</value>
+  <value>0.92000000</value>
   <resolution>0.00100000</resolution>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
@@ -1709,9 +1722,9 @@ e
   <mouseControl act=""/>
  </bsbObject>
  <bsbObject version="2" type="BSBScrollNumber">
-  <objectName>bbmix_display</objectName>
-  <x>113</x>
-  <y>401</y>
+  <objectName>bb_mix</objectName>
+  <x>283</x>
+  <y>404</y>
   <width>80</width>
   <height>25</height>
   <uuid>{78afa9a1-f836-4547-8d80-81486db02073}</uuid>
@@ -1731,7 +1744,7 @@ e
    <g>0</g>
    <b>0</b>
   </bgcolor>
-  <value>2.05000000</value>
+  <value>1.00000000</value>
   <resolution>0.01000000</resolution>
   <minimum>0.00000000</minimum>
   <maximum>5.00000000</maximum>
@@ -1743,8 +1756,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBHSlider">
   <objectName>reverb_level</objectName>
-  <x>287</x>
-  <y>432</y>
+  <x>434</x>
+  <y>435</y>
   <width>120</width>
   <height>25</height>
   <uuid>{4e72262c-67a7-4b25-b963-2cbae66d3ebd}</uuid>
@@ -1753,7 +1766,7 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
-  <value>0.52500000</value>
+  <value>0.49166667</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>-1.00000000</resolution>
@@ -1761,8 +1774,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>407</x>
-  <y>432</y>
+  <x>554</x>
+  <y>435</y>
   <width>46</width>
   <height>27</height>
   <uuid>{f703a53a-5a85-4f19-8c0d-6d391fde0794}</uuid>
@@ -1790,8 +1803,8 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBHSlider">
   <objectName>bb_rate</objectName>
-  <x>94</x>
-  <y>432</y>
+  <x>264</x>
+  <y>435</y>
   <width>120</width>
   <height>25</height>
   <uuid>{5973dd8b-43a5-4e78-9fa9-19ff5ea90107}</uuid>
@@ -1800,102 +1813,36 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>50.00000000</maximum>
-  <value>1.25000000</value>
+  <value>0.33333333</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>-1.00000000</resolution>
   <randomizable group="0">false</randomizable>
  </bsbObject>
- <bsbObject version="2" type="BSBScrollNumber">
-  <objectName>bbrate_display</objectName>
-  <x>112</x>
-  <y>454</y>
-  <width>82</width>
-  <height>25</height>
-  <uuid>{c4670c9c-b87f-421c-948a-dba5ad97fd56}</uuid>
-  <visible>true</visible>
-  <midichan>0</midichan>
-  <midicc>-3</midicc>
-  <alignment>right</alignment>
-  <font>Arial</font>
-  <fontsize>13</fontsize>
-  <color>
-   <r>0</r>
-   <g>255</g>
-   <b>0</b>
-  </color>
-  <bgcolor mode="background">
-   <r>0</r>
-   <g>0</g>
-   <b>0</b>
-  </bgcolor>
-  <value>1.25000000</value>
-  <resolution>0.00100000</resolution>
-  <minimum>0.00000000</minimum>
-  <maximum>50.00000000</maximum>
-  <bordermode>border</bordermode>
-  <borderradius>3</borderradius>
-  <borderwidth>1</borderwidth>
-  <randomizable group="0">false</randomizable>
-  <mouseControl act=""/>
- </bsbObject>
  <bsbObject version="2" type="BSBHSlider">
   <objectName>risset_offset</objectName>
-  <x>273</x>
-  <y>222</y>
-  <width>150</width>
-  <height>20</height>
+  <x>80</x>
+  <y>435</y>
+  <width>130</width>
+  <height>25</height>
   <uuid>{5d4975a8-7006-449c-8c23-6d3b3dfa80f7}</uuid>
   <visible>true</visible>
   <midichan>0</midichan>
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
-  <value>0.01000000</value>
+  <value>0.02000000</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>-1.00000000</resolution>
   <randomizable group="0">false</randomizable>
  </bsbObject>
- <bsbObject version="2" type="BSBScrollNumber">
-  <objectName>risoff_display</objectName>
-  <x>307</x>
-  <y>242</y>
-  <width>80</width>
-  <height>25</height>
-  <uuid>{0c9e4c5b-29a1-4ebc-8a93-5dcfe792139d}</uuid>
-  <visible>true</visible>
-  <midichan>0</midichan>
-  <midicc>-3</midicc>
-  <alignment>right</alignment>
-  <font>Arial</font>
-  <fontsize>13</fontsize>
-  <color>
-   <r>0</r>
-   <g>255</g>
-   <b>0</b>
-  </color>
-  <bgcolor mode="background">
-   <r>0</r>
-   <g>0</g>
-   <b>0</b>
-  </bgcolor>
-  <value>0.01000000</value>
-  <resolution>0.01000000</resolution>
-  <minimum>0.00000000</minimum>
-  <maximum>5.00000000</maximum>
-  <bordermode>border</bordermode>
-  <borderradius>3</borderradius>
-  <borderwidth>1</borderwidth>
-  <randomizable group="0">false</randomizable>
-  <mouseControl act=""/>
- </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>98</x>
-  <y>291</y>
+  <x>268</x>
+  <y>292</y>
   <width>102</width>
-  <height>27</height>
+  <height>30</height>
   <uuid>{72bb78eb-c17b-444d-ab8c-458b1edf0e7d}</uuid>
   <visible>true</visible>
   <midichan>0</midichan>
@@ -1921,10 +1868,10 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>318</x>
-  <y>291</y>
+  <x>465</x>
+  <y>292</y>
   <width>60</width>
-  <height>27</height>
+  <height>30</height>
   <uuid>{53253bed-f55d-4864-ab60-d4b0906df846}</uuid>
   <visible>true</visible>
   <midichan>0</midichan>
@@ -1950,15 +1897,15 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>161</x>
-  <y>2</y>
-  <width>110</width>
+  <x>70</x>
+  <y>3</y>
+  <width>270</width>
   <height>25</height>
   <uuid>{6c37ef1c-719c-4f0b-915d-c8bb75376e39}</uuid>
   <visible>true</visible>
   <midichan>0</midichan>
   <midicc>-3</midicc>
-  <label>Sruti/Drone Box 2.5</label>
+  <label>Sruti/Drone Box 2.6 - Dave Seidel &lt;mysterybear.net/></label>
   <alignment>center</alignment>
   <font>Arial</font>
   <fontsize>11</fontsize>
@@ -1977,30 +1924,168 @@ e
   <borderradius>1</borderradius>
   <borderwidth>1</borderwidth>
  </bsbObject>
- <bsbObject version="2" type="BSBLabel">
-  <objectName/>
-  <x>139</x>
-  <y>552</y>
-  <width>160</width>
-  <height>22</height>
-  <uuid>{2fc81095-66bb-4e6d-b344-ae00432f939a}</uuid>
+ <bsbObject version="2" type="BSBSpinBox">
+  <objectName>risset_offset</objectName>
+  <x>99</x>
+  <y>460</y>
+  <width>90</width>
+  <height>25</height>
+  <uuid>{f82caad1-7fd6-447a-98af-1416902075f6}</uuid>
   <visible>true</visible>
   <midichan>0</midichan>
   <midicc>-3</midicc>
-  <label>Dave Seidel &lt;mysterybear.net/></label>
-  <alignment>center</alignment>
+  <alignment>left</alignment>
   <font>Arial</font>
-  <fontsize>10</fontsize>
-  <precision>3</precision>
+  <fontsize>12</fontsize>
   <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
    <r>255</r>
    <g>255</g>
    <b>255</b>
+  </bgcolor>
+  <resolution>0.01000000</resolution>
+  <minimum>0</minimum>
+  <maximum>1</maximum>
+  <randomizable group="0">false</randomizable>
+  <value>0.02</value>
+ </bsbObject>
+ <bsbObject version="2" type="BSBSpinBox">
+  <objectName>bb_rate</objectName>
+  <x>278</x>
+  <y>460</y>
+  <width>95</width>
+  <height>25</height>
+  <uuid>{e8c0a39e-2286-4754-bcd1-e6799ba36fa2}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <alignment>left</alignment>
+  <font>Arial</font>
+  <fontsize>12</fontsize>
+  <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
+   <r>255</r>
+   <g>255</g>
+   <b>255</b>
+  </bgcolor>
+  <resolution>0.00100000</resolution>
+  <minimum>0</minimum>
+  <maximum>50</maximum>
+  <randomizable group="0">false</randomizable>
+  <value>0.333333</value>
+ </bsbObject>
+ <bsbObject version="2" type="BSBLabel">
+  <objectName/>
+  <x>21</x>
+  <y>435</y>
+  <width>60</width>
+  <height>25</height>
+  <uuid>{8e757ace-4ed5-4de8-b95f-c9fcba0f68d9}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <label>Offset</label>
+  <alignment>right</alignment>
+  <font>Arial</font>
+  <fontsize>13</fontsize>
+  <precision>3</precision>
+  <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
+   <r>255</r>
+   <g>255</g>
+   <b>255</b>
+  </bgcolor>
+  <bordermode>noborder</bordermode>
+  <borderradius>1</borderradius>
+  <borderwidth>1</borderwidth>
+ </bsbObject>
+ <bsbObject version="2" type="BSBScrollNumber">
+  <objectName>risset_mix</objectName>
+  <x>96</x>
+  <y>404</y>
+  <width>80</width>
+  <height>25</height>
+  <uuid>{50511459-bbcd-4f22-8b93-4eb9cea421d9}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <alignment>right</alignment>
+  <font>Arial</font>
+  <fontsize>13</fontsize>
+  <color>
+   <r>0</r>
+   <g>255</g>
+   <b>0</b>
   </color>
   <bgcolor mode="background">
    <r>0</r>
    <g>0</g>
    <b>0</b>
+  </bgcolor>
+  <value>1.00000000</value>
+  <resolution>0.01000000</resolution>
+  <minimum>0.00000000</minimum>
+  <maximum>1.00000000</maximum>
+  <bordermode>border</bordermode>
+  <borderradius>3</borderradius>
+  <borderwidth>1</borderwidth>
+  <randomizable group="0">false</randomizable>
+  <mouseControl act=""/>
+ </bsbObject>
+ <bsbObject version="2" type="BSBKnob">
+  <objectName>risset_mix</objectName>
+  <x>96</x>
+  <y>324</y>
+  <width>80</width>
+  <height>80</height>
+  <uuid>{0740fcea-a7ec-4b55-b483-daf2f0f87e40}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <minimum>0.00000000</minimum>
+  <maximum>1.00000000</maximum>
+  <value>1.00000000</value>
+  <mode>lin</mode>
+  <mouseControl act="jump">continuous</mouseControl>
+  <resolution>0.01000000</resolution>
+  <randomizable group="0">false</randomizable>
+ </bsbObject>
+ <bsbObject version="2" type="BSBLabel">
+  <objectName/>
+  <x>28</x>
+  <y>357</y>
+  <width>70</width>
+  <height>25</height>
+  <uuid>{3ab28aff-4bce-4d36-ba26-65c92ebe6b8e}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <label>Level</label>
+  <alignment>right</alignment>
+  <font>Arial</font>
+  <fontsize>13</fontsize>
+  <precision>3</precision>
+  <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
+   <r>255</r>
+   <g>255</g>
+   <b>255</b>
   </bgcolor>
   <bordermode>noborder</bordermode>
   <borderradius>1</borderradius>
@@ -2208,6 +2293,51 @@ e
 <value id="{5d4975a8-7006-449c-8c23-6d3b3dfa80f7}" mode="1" >0.01000000</value>
 <value id="{0c9e4c5b-29a1-4ebc-8a93-5dcfe792139d}" mode="1" >0.01000000</value>
 </preset>
+<preset name="root-fifth-seventh-ninth" number="5" >
+<value id="{69bad91e-0026-4238-862e-12c143685397}" mode="1" >9.00000000</value>
+<value id="{ef99bd92-1c6f-45f9-a32a-303c366b3332}" mode="1" >8.00000000</value>
+<value id="{aabc2b30-dc79-43af-88df-b977177aa58e}" mode="1" >4.00000000</value>
+<value id="{c32d5493-922d-4709-9f5a-56985fbb0475}" mode="1" >7.00000000</value>
+<value id="{af1ed01f-25bf-4565-85f8-0448d63214d8}" mode="1" >2.00000000</value>
+<value id="{8e26cac5-5faa-410e-b2c2-1342978a5366}" mode="1" >3.00000000</value>
+<value id="{09f87a96-555a-445a-82bd-478afb7abfb5}" mode="1" >1.00000000</value>
+<value id="{756d7d97-b16b-4877-a1a2-1a4f05a4753f}" mode="1" >1.00000000</value>
+<value id="{2f45e5ba-8d31-47a1-abfd-284ee246c74d}" mode="4" >0</value>
+<value id="{8cfc7c9f-c14b-4e0a-969e-8c73d0e76eca}" mode="4" >0</value>
+<value id="{983d831d-92f7-4f17-9b74-9dab7db7059f}" mode="1" >60.00000000</value>
+<value id="{5a9958a4-4a24-4c2e-8a93-9c900fc8b294}" mode="1" >5.00000000</value>
+<value id="{c398c0c6-f76b-464f-a86c-51e15765a9dd}" mode="1" >2.00000000</value>
+<value id="{051c6d7f-a070-42a6-8a8e-710d1439c9f5}" mode="1" >1.00000000</value>
+<value id="{4e4f3e61-cb8d-49bd-94e4-92f77b8dda9f}" mode="1" >1.00000000</value>
+<value id="{7185c5c5-613c-4002-ad91-7d7351bf3e43}" mode="1" >1.00000000</value>
+<value id="{0597468a-539e-46ff-ac9e-d27938ee4929}" mode="4" >0</value>
+<value id="{11e96f5c-80dd-4079-b41d-d64a0a0eeaf4}" mode="4" >0</value>
+<value id="{92247f2b-7cb0-4ba8-bc03-03361e1a10bd}" mode="4" >0</value>
+<value id="{2dcc0403-16c4-45e2-9427-3b5b46f1e84b}" mode="4" >0</value>
+<value id="{08fb344f-e380-40a0-abd0-26225f0d1532}" mode="4" >0</value>
+<value id="{c5b5e85b-86f3-45db-abf9-2399bda7e100}" mode="4" >0</value>
+<value id="{f0946452-bea5-454b-876c-ec1571771c49}" mode="4" >0</value>
+<value id="{c5a7748a-5eda-4033-9d22-aba27d00482a}" mode="4" >0</value>
+<value id="{0764d8d5-22a9-489d-8ae5-4e19e0567038}" mode="1" >1.00000000</value>
+<value id="{bd87c226-5077-4660-84e1-f4dafbfff356}" mode="1" >1.00000000</value>
+<value id="{bd87c226-5077-4660-84e1-f4dafbfff356}" mode="2" >1.00000000</value>
+<value id="{ab7d8f5b-2b2a-462c-8199-050ead18ba84}" mode="1" >1.00000000</value>
+<value id="{ab7d8f5b-2b2a-462c-8199-050ead18ba84}" mode="2" >1.00000000</value>
+<value id="{137d21e6-b6a2-4f9c-8495-111e5d44117e}" mode="1" >1.00000000</value>
+<value id="{137d21e6-b6a2-4f9c-8495-111e5d44117e}" mode="2" >1.00000000</value>
+<value id="{e4e782ae-e528-42d0-a9f3-57081bddbc78}" mode="1" >1.00000000</value>
+<value id="{e4e782ae-e528-42d0-a9f3-57081bddbc78}" mode="2" >1.00000000</value>
+<value id="{77d49f7c-db91-404a-bede-14601a37da3d}" mode="1" >0.86000001</value>
+<value id="{bbaf98ce-16fe-4bea-82db-1aa7909b40bd}" mode="1" >0.86000001</value>
+<value id="{78afa9a1-f836-4547-8d80-81486db02073}" mode="1" >1.00000000</value>
+<value id="{4e72262c-67a7-4b25-b963-2cbae66d3ebd}" mode="1" >0.52499998</value>
+<value id="{5973dd8b-43a5-4e78-9fa9-19ff5ea90107}" mode="1" >1.25000000</value>
+<value id="{5d4975a8-7006-449c-8c23-6d3b3dfa80f7}" mode="1" >0.02000000</value>
+<value id="{f82caad1-7fd6-447a-98af-1416902075f6}" mode="1" >0.02000000</value>
+<value id="{e8c0a39e-2286-4754-bcd1-e6799ba36fa2}" mode="1" >0.33333334</value>
+<value id="{50511459-bbcd-4f22-8b93-4eb9cea421d9}" mode="1" >1.00000000</value>
+<value id="{0740fcea-a7ec-4b55-b483-daf2f0f87e40}" mode="1" >1.00000000</value>
+</preset>
 </bsbPresets>
 <MacOptions>
 Version: 3
@@ -2215,7 +2345,7 @@ Render: Real
 Ask: Yes
 Functions: ioObject
 Listing: Window
-WindowBounds: 876 72 490 603
+WindowBounds: 763 72 603 603
 CurrentView: io
 IOViewEdit: On
 Options:
@@ -2223,29 +2353,29 @@ Options:
 <MacGUI>
 ioView background {21845, 43690, 32639}
 ioText {7, 60} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 1
-ioText {70, 60} {48, 25} editnum 2.000000 1.000000 "n_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
+ioText {70, 60} {48, 25} editnum 9.000000 1.000000 "n_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 9.000000
 ioText {120, 60} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {134, 60} {48, 25} editnum 1.000000 1.000000 "d_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
-ioText {133, 90} {48, 25} editnum 2.000000 1.000000 "d_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
+ioText {134, 60} {48, 25} editnum 8.000000 1.000000 "d_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 8.000000
+ioText {133, 90} {48, 25} editnum 4.000000 1.000000 "d_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 4.000000
 ioText {119, 90} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {69, 90} {48, 25} editnum 3.000000 1.000000 "n_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 3.000000
+ioText {69, 90} {48, 25} editnum 7.000000 1.000000 "n_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 7.000000
 ioText {7, 90} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 2
-ioText {133, 120} {48, 25} editnum 3.000000 1.000000 "d_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 3.000000
+ioText {133, 120} {48, 25} editnum 2.000000 1.000000 "d_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
 ioText {119, 120} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {69, 120} {48, 25} editnum 4.000000 1.000000 "n_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 4.000000
+ioText {69, 120} {48, 25} editnum 3.000000 1.000000 "n_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 3.000000
 ioText {7, 120} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 3
 ioText {7, 150} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 4
 ioText {69, 150} {48, 25} editnum 1.000000 1.000000 "n_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioText {119, 150} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
 ioText {133, 150} {48, 25} editnum 1.000000 1.000000 "d_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
-ioButton {112, 504} {100, 30} value 1.000000 "_Play" "Start" "/" i 3 0 -1
-ioButton {219, 504} {100, 30} event 1.000000 "btn_stop" "Stop" "/" i5 0 1
-ioText {71, 195} {120, 25} editnum 63.992000 0.001000 "base_freq" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 63.992000
+ioButton {69, 524} {100, 30} value 1.000000 "_Play" "Start" "/" i 3 0 -1
+ioButton {176, 524} {100, 30} event 1.000000 "btn_stop" "Stop" "/" i5 0 1
+ioText {71, 195} {120, 25} editnum 60.000000 0.001000 "base_freq" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 60.000000
 ioText {7, 196} {65, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Base (Hz)
-ioMenu {69, 239} {114, 30} 5 303 "  Sine,  Saw 1,  Saw 2,  Square 1,  Square 2,  Prime 1,  Prime 2,  Fib 1,  Fib 2,  Asymp Saw" menu_waveform
+ioMenu {69, 239} {114, 30} 9 303 "  Sine,  Saw 1,  Saw 2,  Square 1,  Square 2,  Prime 1,  Prime 2,  Fib 1,  Fib 2,  Asymptotic Saw" menu_waveform
 ioText {7, 242} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wave
-ioText {242, 354} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Feedback
-ioText {205, 60} {35, 25} editnum 1.000000 1.000000 "8ve_1" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
+ioText {389, 355} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Feedback
+ioText {205, 60} {35, 25} editnum 2.000000 1.000000 "8ve_1" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
 ioText {205, 90} {35, 25} editnum 1.000000 1.000000 "8ve_2" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioText {205, 120} {35, 25} editnum 1.000000 1.000000 "8ve_3" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioText {205, 150} {35, 25} editnum 1.000000 1.000000 "8ve_4" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
@@ -2259,27 +2389,30 @@ ioButton {330, 60} {50, 27} event 1.000000 "btn_off1" "Off" "/" i 4 0 1 1
 ioButton {330, 90} {50, 27} event 1.000000 "btn_off2" "Off" "/" i 4 0 1 2
 ioButton {330, 120} {50, 27} event 1.000000 "btn_off3" "Off" "/" i 4 0 1 3
 ioButton {330, 150} {50, 27} event 1.000000 "btn_off4" "Off" "/" i 4 0 1 4
-ioText {36, 432} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder BPS
-ioText {45, 354} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Level
-ioKnob {113, 321} {80, 80} 5.000000 0.000000 0.010000 2.050000 bb_mix
+ioText {206, 435} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder BPS
+ioText {215, 356} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Level
+ioKnob {283, 324} {80, 80} 1.000000 0.000000 0.010000 1.000000 bb_mix
 ioMeter {389, 150} {24, 26} {0, 59904, 0} "disp_on_c4" 0.000000 "disp_on_c4" 0.000000 fill 1 0 mouse
 ioMeter {389, 121} {24, 26} {0, 59904, 0} "disp_on_c3" 0.000000 "disp_on_c3" 0.000000 fill 1 0 mouse
 ioMeter {389, 90} {24, 26} {0, 59904, 0} "disp_on_c2" 0.000000 "disp_on_c2" 0.000000 fill 1 0 mouse
 ioMeter {389, 61} {24, 26} {0, 59904, 0} "disp_on_c1" 0.000000 "disp_on_c1" 0.000000 fill 1 0 mouse
-ioKnob {309, 321} {80, 80} 1.000000 0.000000 0.010000 0.860000 reverb_feedback
-ioText {303, 195} {90, 27} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Risset Offset
-ioText {248, 432} {42, 26} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wet
-ioText {309, 401} {80, 25} scroll 0.860000 0.001000 "feedback_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
-ioText {113, 401} {80, 25} scroll 2.050000 0.010000 "bbmix_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
-ioSlider {287, 432} {120, 25} 0.000000 1.000000 0.525000 reverb_level
-ioText {407, 432} {46, 27} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Dry
-ioSlider {94, 432} {120, 25} 0.000000 50.000000 1.250000 bb_rate
-ioText {112, 454} {82, 25} scroll 1.250000 0.001000 "bbrate_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
-ioSlider {273, 222} {150, 20} 0.000000 1.000000 0.010000 risset_offset
-ioText {307, 242} {80, 25} scroll 0.010000 0.010000 "risoff_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
-ioText {98, 291} {102, 27} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Binaural Beats
-ioText {318, 291} {60, 27} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Reverb
-ioText {161, 2} {110, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.5
-ioText {139, 552} {160, 22} label 0.000000 0.00100 "" center "Arial" 10 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Dave Seidel <mysterybear.net/>
+ioKnob {456, 324} {80, 80} 1.000000 0.000000 0.010000 0.920000 reverb_feedback
+ioText {68, 292} {130, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Harmonic Arpeggio
+ioText {395, 435} {42, 26} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wet
+ioText {456, 404} {80, 25} scroll 0.920000 0.001000 "feedback_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
+ioText {283, 404} {80, 25} scroll 1.000000 0.010000 "bb_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 1.00000000
+ioSlider {434, 435} {120, 25} 0.000000 1.000000 0.491667 reverb_level
+ioText {554, 435} {46, 27} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Dry
+ioSlider {264, 435} {120, 25} 0.000000 50.000000 0.333333 bb_rate
+ioSlider {80, 435} {130, 25} 0.000000 1.000000 0.020000 risset_offset
+ioText {268, 292} {102, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Binaural Beats
+ioText {465, 292} {60, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Reverb
+ioText {70, 3} {270, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.6 - Dave Seidel <mysterybear.net/>
+ioText {99, 460} {90, 25} editnum 0.020000 0.010000 "risset_offset" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 0.020000
+ioText {278, 460} {95, 25} editnum 0.333333 0.001000 "bb_rate" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 0.333333
+ioText {21, 435} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Offset
+ioText {96, 404} {80, 25} scroll 1.000000 0.010000 "risset_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
+ioKnob {96, 324} {80, 80} 1.000000 0.000000 0.010000 1.000000 risset_mix
+ioText {28, 357} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Level
 </MacGUI>
 <EventPanel name="" tempo="60.00000000" loop="8.00000000" x="126" y="152" width="655" height="346" visible="true" loopStart="0" loopEnd="0">    </EventPanel>
