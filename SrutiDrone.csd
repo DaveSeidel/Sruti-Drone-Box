@@ -11,18 +11,20 @@
 ; is open, and click the Start button.  Then use On/Off
 ; buttons to play or stop the drones.
 ;
-; version 2.4 (12-Sep-2010):
+; version 2.5 (12-Sep-2010)
+;	- add precision to the base freq. per David First
+; version 2.4 (12-Sep-2010)
 ;	- bugfix from Mark Van Peteghem in the binauralize UDO
-; version 2.3 (10-Sep-2010):
+; version 2.3 (10-Sep-2010)
 ;	- fixes from Andres
-; version 2.2 (09-Sep-2010):
+; version 2.2 (09-Sep-2010)
 ;	- binaural beat and reverb controls
 ;	- make Risset offset realtime
-; version 2.1 (06-Sep-2010):
+; version 2.1 (06-Sep-2010)
 ;	- fixed release on turnoff
 ;	- better "on" indicators fron joachim
 ;	- added binaural beating effect
-; version 2.0 (06-Sep-2010):
+; version 2.0 (06-Sep-2010)
 ;	- rewrite for QuteCsound
 ;
 ; Copyright 2005,2010, Dave Seidel. Some rights reserved.
@@ -886,7 +888,7 @@ e
   <objectName>base_freq</objectName>
   <x>71</x>
   <y>195</y>
-  <width>80</width>
+  <width>120</width>
   <height>25</height>
   <uuid>{983d831d-92f7-4f17-9b74-9dab7db7059f}</uuid>
   <visible>true</visible>
@@ -905,11 +907,11 @@ e
    <g>255</g>
    <b>255</b>
   </bgcolor>
-  <resolution>1.00000000</resolution>
+  <resolution>0.00100000</resolution>
   <minimum>1</minimum>
   <maximum>20000</maximum>
   <randomizable group="0">false</randomizable>
-  <value>60</value>
+  <value>63.992</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -1956,7 +1958,7 @@ e
   <visible>true</visible>
   <midichan>0</midichan>
   <midicc>-3</midicc>
-  <label>Sruti/Drone Box 2.4</label>
+  <label>Sruti/Drone Box 2.5</label>
   <alignment>center</alignment>
   <font>Arial</font>
   <fontsize>11</fontsize>
@@ -2238,7 +2240,7 @@ ioText {119, 150} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0}
 ioText {133, 150} {48, 25} editnum 1.000000 1.000000 "d_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioButton {112, 504} {100, 30} value 1.000000 "_Play" "Start" "/" i 3 0 -1
 ioButton {219, 504} {100, 30} event 1.000000 "btn_stop" "Stop" "/" i5 0 1
-ioText {71, 195} {80, 25} editnum 60.000000 1.000000 "base_freq" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 60.000000
+ioText {71, 195} {120, 25} editnum 63.992000 0.001000 "base_freq" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 63.992000
 ioText {7, 196} {65, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Base (Hz)
 ioMenu {69, 239} {114, 30} 5 303 "  Sine,  Saw 1,  Saw 2,  Square 1,  Square 2,  Prime 1,  Prime 2,  Fib 1,  Fib 2,  Asymp Saw" menu_waveform
 ioText {7, 242} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wave
@@ -2277,7 +2279,7 @@ ioSlider {273, 222} {150, 20} 0.000000 1.000000 0.010000 risset_offset
 ioText {307, 242} {80, 25} scroll 0.010000 0.010000 "risoff_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
 ioText {98, 291} {102, 27} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Binaural Beats
 ioText {318, 291} {60, 27} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Reverb
-ioText {161, 2} {110, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.4
+ioText {161, 2} {110, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.5
 ioText {139, 552} {160, 22} label 0.000000 0.00100 "" center "Arial" 10 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Dave Seidel <mysterybear.net/>
 </MacGUI>
 <EventPanel name="" tempo="60.00000000" loop="8.00000000" x="126" y="152" width="655" height="346" visible="true" loopStart="0" loopEnd="0">    </EventPanel>
