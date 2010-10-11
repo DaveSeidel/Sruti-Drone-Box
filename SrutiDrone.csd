@@ -11,8 +11,14 @@
 ; is open, and click the Start button.  Then use On/Off
 ; buttons to play or stop the drones.
 ;
+; version 2.7 (09-Oct-2010)
+;	- always play primary oscillator for each tone, independent of
+;	  harmonic arpeggio or binaural beat output
+;	- made all pitch controls (Ratio, 8ve, and Base) changeable in realtime
+;	- add option to tune base frequency to conventional (Western) pitches,
+;	  using pitch-class or note name 
 ; version 2.6 (26-Sep-2010)
-;	- add level control for Risset effect (now labelled Harmonic Arpeggio);
+;	- add level control for Risset effect (now labeled Harmonic Arpeggio);
 ;	  this allows the use of binaural beating by itself
 ;	- line up all effects horizontally
 ;	- use SpinBox for Harmonic Arpeggio Offset and Binaural Beats BPS, for
@@ -127,28 +133,8 @@ gifftsz	init		2048
 ; initialize globals for values from UI
 ;-------------------------------------------------------------------------
 
-gkbase	init		0
 gktbl	init		0
-
-gknum1	init		0
-gkden1	init		0
-gk8ve1	init		0
-gkon1	init		0
-
-gknum2	init		0
-gkden2	init		0
-gk8ve2	init		0
-gkon2	init		0
-
-gknum3	init		0
-gkden3	init		0
-gk8ve3	init		0
-gkon3	init		0
-
-gknum4	init		0
-gkden4	init		0
-gk8ve4	init		0
-gkon4	init		0
+gkbase	init		0
 
 ;---------------------------------------------------------------------------
 ; orchestra macros
@@ -196,38 +182,7 @@ abinR	pvsynth	fbinR
 		xout	abinL, abinR
 
 	endop
-
-;---------------------------------------------------------------------------
-; get values from UI
-;---------------------------------------------------------------------------
-
-	instr 1
-
-gkbase	invalue	"base_freq"
-gktbl	invalue	"menu_waveform"
-
-gknum1	invalue	"n_1"
-gkden1	invalue	"d_1"
-gk8ve1	invalue	"8ve_1"
-gkon1	invalue	"cb_1"
-
-gknum2	invalue	"n_2"
-gkden2	invalue	"d_2"
-gk8ve2	invalue	"8ve_2"
-gkon2	invalue	"cb_2"
-
-gknum3	invalue	"n_3"
-gkden3	invalue	"d_3"
-gk8ve3	invalue	"8ve_3"
-gkon3	invalue	"cb_3"
-
-gknum4	invalue	"n_4"
-gkden4	invalue	"d_4"
-gk8ve4	invalue	"8ve_4"
-gkon4	invalue	"cb_4"
-
-	endin
-
+	
 ;---------------------------------------------------------------------------
 ; oscillators with optional Risset harmonic arpeggio and binaural beating
 ;---------------------------------------------------------------------------
@@ -235,52 +190,58 @@ gkon4	invalue	"cb_4"
 	instr 3
 
 itone	=		p4
-
 iamp		=		ampdb(-15)/9
-itbl		=		i(gktbl)+1
 ipan		=		0.0
+itbl		=		i(gktbl)
+
 kgoto kpass
 ; Send this value only in the init pass
 Sdsp_c	sprintf	"disp_on_c%d", itone
 		outvalue	Sdsp_c, 1
-
 kpass:
 
-	; which tone is being played?
+; which tone is being played?
 	if (itone == 1) then
-inum		=		i(gknum1)
-iden		=		i(gkden1)
-ibase	=		$BOCT.(i(gkbase)'i(gk8ve1))
+knum		invalue	"n_1"
+kden		invalue	"d_1"
+k8ve1	invalue	"8ve_1"
+kbase	=		$BOCT.(gkbase'k8ve1)
 	elseif (itone == 2) then
-inum		=		i(gknum2)
-iden		=		i(gkden2)
-ibase	=		$BOCT.(i(gkbase)'i(gk8ve2))
+knum		invalue	"n_2"
+kden		invalue	"d_2"
+k8ve2	invalue	"8ve_2"
+kbase	=		$BOCT.(gkbase'k8ve2)
 	elseif (itone == 3) then
-inum		=		i(gknum3)
-iden		=		i(gkden3)
-ibase	=		$BOCT.(i(gkbase)'i(gk8ve3))
+knum		invalue	"n_3"
+kden		invalue	"d_3"
+k8ve3	invalue	"8ve_3"
+kbase	=		$BOCT.(gkbase'k8ve3)
 	elseif (itone == 4) then
-inum		=		i(gknum4)
-iden		=		i(gkden4)
-ibase	=		$BOCT.(i(gkbase)'i(gk8ve4))
+knum		invalue	"n_4"
+kden		invalue	"d_4"
+k8ve4	invalue	"8ve_4"
+kbase	=		$BOCT.(gkbase'k8ve4)
 	endif
 
-ifrac	=		inum/iden
-kfreq	=		ibase*ifrac
+; determine pitch
+kfrac	=		knum/kden
+kfreq	=		kbase*kfrac
 
+; set up Risset effect
 koff		invalue	"risset_offset"
-;ioff	=		p10						; same offset for all
-;ioff	=		ifrac*p10					; proportional to interval
-koff0	=		((iden*2)/inum)*koff		; inversely proportional to ratio
-
+koff0	=		((kden*2)/knum)*koff		; inversely proportional to ratio
 koff1	=		koff0					; oscillator offset for arpeggio
 koff2	=		2*koff					; .
 koff3	=		3*koff					; .
 koff4	=		4*koff					; .
 
+; envelope
 kenv		linenr	iamp, 2, 3, 0.01			; env needs release segment for turnoff2
 
+; generate primary tone
 a1		poscil3	kenv, kfreq, itbl
+
+; generate Risset tones
 a2		poscil3	kenv, kfreq+koff1, itbl		; nine oscillators with the same envelope
 a3		poscil3	kenv, kfreq+koff2, itbl		; and waveform, but slightly different
 a4		poscil3	kenv, kfreq+koff3, itbl		; frequencies, create harmonic arpeggio
@@ -290,16 +251,22 @@ a7		poscil3	kenv, kfreq-koff2, itbl
 a8		poscil3	kenv, kfreq-koff3, itbl
 a9		poscil3	kenv, kfreq-koff4, itbl
 
-krismix	invalue	"risset_mix"
-aout		sum		a1, a2, a3, a4, a5, a6, a7, a8, a9
-a1L,a1R	pan_equal_power	aout*krismix, ipan
+; create simple output (just the primary oscillator)
+a1L, a1R	pan_equal_power	a1, ipan
 
+; create Risset output
+krismix	invalue	"risset_mix"
+aout		sum		a2, a3, a4, a5, a6, a7, a8, a9
+a2L,a2R	pan_equal_power	aout*krismix, ipan
+
+; create binaural beating output
 kbbmix	invalue	"bb_mix"
 kbbrate	invalue	"bb_rate"
-a2L,a2R	binauralize	a1*(kbbmix*gibblvl), kfreq, kbbrate
+a3L,a3R	binauralize	a1*(kbbmix*gibblvl), kfreq, kbbrate
 
-gaL		=		gaL+a1L+a2L
-gaR		=		gaR+a1R+a2R
+; combine and send to global output channels
+gaL		=		gaL+a1L+a2L+a3L
+gaR		=		gaR+a1R+a2R+a3R
 
 	endin
 	
@@ -346,6 +313,38 @@ Sdsp_c	sprintf	"disp_on_c%d", itone
 	endin
 
 ;---------------------------------------------------------------------------
+; get/set base pitch and waveform
+;---------------------------------------------------------------------------
+
+	instr 98
+
+; base pitch
+knotes	invalue	"cb_use_notes"
+	if (knotes == 0) then
+	; tuning by cycles per second
+kbase0	invalue	"base_freq"
+koct		=		octcps(kbase0)
+kpch		=		pchoct(koct)
+kpch_i	=		int(kpch)
+kpch_f	=		frac(kpch)
+;		outvalue	"base_pch_int", kpch_i
+;		outvalue	"base_pch_frac", kpch_f
+	else
+	; tuning by pitch-class
+kpch_i	invalue	"base_pch_int"
+kpch_f	invalue	"base_pch_frac"
+kbase0	=		cpspch(kpch_i+(kpch_f/100))
+		outvalue	"base_freq", kbase0
+	endif
+gkbase	=		kbase0
+
+; waveform
+ktbl		invalue	"menu_waveform"
+gktbl	=		ktbl+1
+
+	endin
+
+;---------------------------------------------------------------------------
 ; global output instrument with optional reverb
 ;---------------------------------------------------------------------------
 
@@ -372,7 +371,7 @@ gaR		=	0
 ;---------------------------------------------------------------------------
 
 ; start reading UI values
-i1 0 36000
+i98 0 36000
 
 ; start output
 i99 1 36000 4000 .2
@@ -380,13 +379,12 @@ i99 1 36000 4000 .2
 e
 
 </CsScore>
-</CsoundSynthesizer>
-<bsbPanel>
+</CsoundSynthesizer><bsbPanel>
  <label>Widgets</label>
  <objectName/>
- <x>763</x>
+ <x>755</x>
  <y>72</y>
- <width>603</width>
+ <width>611</width>
  <height>603</height>
  <visible>true</visible>
  <uuid/>
@@ -451,11 +449,11 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>9</value>
+  <value>2</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>120</x>
+  <x>118</x>
   <y>60</y>
   <width>11</width>
   <height>25</height>
@@ -484,7 +482,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>d_1</objectName>
-  <x>134</x>
+  <x>129</x>
   <y>60</y>
   <width>48</width>
   <height>25</height>
@@ -509,11 +507,11 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>8</value>
+  <value>1</value>
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>d_2</objectName>
-  <x>133</x>
+  <x>129</x>
   <y>90</y>
   <width>48</width>
   <height>25</height>
@@ -538,11 +536,11 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>4</value>
+  <value>2</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>119</x>
+  <x>118</x>
   <y>90</y>
   <width>11</width>
   <height>25</height>
@@ -571,7 +569,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>n_2</objectName>
-  <x>69</x>
+  <x>70</x>
   <y>90</y>
   <width>48</width>
   <height>25</height>
@@ -596,7 +594,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>7</value>
+  <value>3</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -629,7 +627,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>d_3</objectName>
-  <x>133</x>
+  <x>129</x>
   <y>120</y>
   <width>48</width>
   <height>25</height>
@@ -654,11 +652,11 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>2</value>
+  <value>3</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>119</x>
+  <x>118</x>
   <y>120</y>
   <width>11</width>
   <height>25</height>
@@ -687,7 +685,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>n_3</objectName>
-  <x>69</x>
+  <x>70</x>
   <y>120</y>
   <width>48</width>
   <height>25</height>
@@ -712,7 +710,7 @@ e
   <minimum>1</minimum>
   <maximum>2048</maximum>
   <randomizable group="0">false</randomizable>
-  <value>3</value>
+  <value>4</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -774,7 +772,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>n_4</objectName>
-  <x>69</x>
+  <x>70</x>
   <y>150</y>
   <width>48</width>
   <height>25</height>
@@ -803,7 +801,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>119</x>
+  <x>118</x>
   <y>150</y>
   <width>11</width>
   <height>25</height>
@@ -832,7 +830,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>d_4</objectName>
-  <x>133</x>
+  <x>129</x>
   <y>150</y>
   <width>48</width>
   <height>25</height>
@@ -924,7 +922,7 @@ e
   <minimum>1</minimum>
   <maximum>20000</maximum>
   <randomizable group="0">false</randomizable>
-  <value>60</value>
+  <value>97.9933</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -1017,7 +1015,7 @@ e
     <stringvalue/>
    </bsbDropdownItem>
   </bsbDropdownItemList>
-  <selectedIndex>9</selectedIndex>
+  <selectedIndex>7</selectedIndex>
   <randomizable group="0">false</randomizable>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
@@ -1105,7 +1103,7 @@ e
   <minimum>-6</minimum>
   <maximum>6</maximum>
   <randomizable group="0">false</randomizable>
-  <value>2</value>
+  <value>1</value>
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>8ve_2</objectName>
@@ -1196,7 +1194,7 @@ e
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
-  <x>101</x>
+  <x>99</x>
   <y>31</y>
   <width>50</width>
   <height>25</height>
@@ -1474,7 +1472,7 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
-  <value>1.00000000</value>
+  <value>0.00000000</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>0.01000000</resolution>
@@ -1624,7 +1622,7 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
-  <value>0.92000000</value>
+  <value>0.86000001</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>0.01000000</resolution>
@@ -1711,7 +1709,7 @@ e
    <g>0</g>
    <b>0</b>
   </bgcolor>
-  <value>0.92000000</value>
+  <value>0.86000001</value>
   <resolution>0.00100000</resolution>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
@@ -1744,7 +1742,7 @@ e
    <g>0</g>
    <b>0</b>
   </bgcolor>
-  <value>1.00000000</value>
+  <value>0.00000000</value>
   <resolution>0.01000000</resolution>
   <minimum>0.00000000</minimum>
   <maximum>5.00000000</maximum>
@@ -1766,7 +1764,7 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
-  <value>0.49166667</value>
+  <value>0.51666667</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>-1.00000000</resolution>
@@ -1813,7 +1811,7 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>50.00000000</maximum>
-  <value>0.33333333</value>
+  <value>1.25000000</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>-1.00000000</resolution>
@@ -1905,7 +1903,7 @@ e
   <visible>true</visible>
   <midichan>0</midichan>
   <midicc>-3</midicc>
-  <label>Sruti/Drone Box 2.6 - Dave Seidel &lt;mysterybear.net/></label>
+  <label>Sruti/Drone Box 2.7 - Dave Seidel &lt;mysterybear.net/></label>
   <alignment>center</alignment>
   <font>Arial</font>
   <fontsize>11</fontsize>
@@ -1980,7 +1978,7 @@ e
   <minimum>0</minimum>
   <maximum>50</maximum>
   <randomizable group="0">false</randomizable>
-  <value>0.333333</value>
+  <value>1.25</value>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -2034,7 +2032,7 @@ e
    <g>0</g>
    <b>0</b>
   </bgcolor>
-  <value>1.00000000</value>
+  <value>0.00000000</value>
   <resolution>0.01000000</resolution>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
@@ -2056,7 +2054,7 @@ e
   <midicc>-3</midicc>
   <minimum>0.00000000</minimum>
   <maximum>1.00000000</maximum>
-  <value>1.00000000</value>
+  <value>0.00000000</value>
   <mode>lin</mode>
   <mouseControl act="jump">continuous</mouseControl>
   <resolution>0.01000000</resolution>
@@ -2074,6 +2072,212 @@ e
   <midicc>-3</midicc>
   <label>Level</label>
   <alignment>right</alignment>
+  <font>Arial</font>
+  <fontsize>13</fontsize>
+  <precision>3</precision>
+  <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
+   <r>255</r>
+   <g>255</g>
+   <b>255</b>
+  </bgcolor>
+  <bordermode>noborder</bordermode>
+  <borderradius>1</borderradius>
+  <borderwidth>1</borderwidth>
+ </bsbObject>
+ <bsbObject version="2" type="BSBSpinBox">
+  <objectName>base_pch_int</objectName>
+  <x>278</x>
+  <y>195</y>
+  <width>40</width>
+  <height>25</height>
+  <uuid>{f234e643-9206-45d2-90cc-21903a1a0b08}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <alignment>left</alignment>
+  <font>Arial</font>
+  <fontsize>12</fontsize>
+  <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
+   <r>255</r>
+   <g>255</g>
+   <b>255</b>
+  </bgcolor>
+  <resolution>1.00000000</resolution>
+  <minimum>4</minimum>
+  <maximum>9</maximum>
+  <randomizable group="0">false</randomizable>
+  <value>6</value>
+ </bsbObject>
+ <bsbObject version="2" type="BSBSpinBox">
+  <objectName>base_pch_frac</objectName>
+  <x>327</x>
+  <y>195</y>
+  <width>40</width>
+  <height>25</height>
+  <uuid>{53ac49f4-196e-48d5-817c-dac614e8d692}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <alignment>left</alignment>
+  <font>Arial</font>
+  <fontsize>12</fontsize>
+  <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
+   <r>255</r>
+   <g>255</g>
+   <b>255</b>
+  </bgcolor>
+  <resolution>1.00000000</resolution>
+  <minimum>0</minimum>
+  <maximum>11</maximum>
+  <randomizable group="0">false</randomizable>
+  <value>7</value>
+ </bsbObject>
+ <bsbObject version="2" type="BSBDropdown">
+  <objectName>base_pch_frac</objectName>
+  <x>373</x>
+  <y>195</y>
+  <width>43</width>
+  <height>25</height>
+  <uuid>{0f0d344d-e4ed-48c9-a710-9b2e2d5533c4}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <bsbDropdownItemList>
+   <bsbDropdownItem>
+    <name> C</name>
+    <value>0</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> C#</name>
+    <value>1</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> D</name>
+    <value>2</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> D#</name>
+    <value>3</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> E</name>
+    <value>4</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> F</name>
+    <value>5</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> F#</name>
+    <value>6</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> G</name>
+    <value>7</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> G#</name>
+    <value>8</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> A</name>
+    <value>9</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> A#</name>
+    <value>10</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+   <bsbDropdownItem>
+    <name> B</name>
+    <value>11</value>
+    <stringvalue/>
+   </bsbDropdownItem>
+  </bsbDropdownItemList>
+  <selectedIndex>7</selectedIndex>
+  <randomizable group="0">false</randomizable>
+ </bsbObject>
+ <bsbObject version="2" type="BSBCheckBox">
+  <objectName>cb_use_notes</objectName>
+  <x>253</x>
+  <y>198</y>
+  <width>20</width>
+  <height>20</height>
+  <uuid>{e14b7297-ea7c-42dd-9a08-e62468e528ad}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <selected>true</selected>
+  <label/>
+  <pressedValue>1</pressedValue>
+  <randomizable group="0">false</randomizable>
+ </bsbObject>
+ <bsbObject version="2" type="BSBLabel">
+  <objectName/>
+  <x>188</x>
+  <y>195</y>
+  <width>67</width>
+  <height>25</height>
+  <uuid>{05a8ce7a-1422-45f1-846a-93ef4493186f}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <label>Notes</label>
+  <alignment>right</alignment>
+  <font>Arial</font>
+  <fontsize>13</fontsize>
+  <precision>3</precision>
+  <color>
+   <r>0</r>
+   <g>0</g>
+   <b>0</b>
+  </color>
+  <bgcolor mode="nobackground">
+   <r>255</r>
+   <g>255</g>
+   <b>255</b>
+  </bgcolor>
+  <bordermode>noborder</bordermode>
+  <borderradius>1</borderradius>
+  <borderwidth>1</borderwidth>
+ </bsbObject>
+ <bsbObject version="2" type="BSBLabel">
+  <objectName/>
+  <x>316</x>
+  <y>195</y>
+  <width>11</width>
+  <height>25</height>
+  <uuid>{1e42d19e-eb6d-48ef-a29a-3392d8b898c3}</uuid>
+  <visible>true</visible>
+  <midichan>0</midichan>
+  <midicc>-3</midicc>
+  <label>.</label>
+  <alignment>center</alignment>
   <font>Arial</font>
   <fontsize>13</fontsize>
   <precision>3</precision>
@@ -2345,7 +2549,7 @@ Render: Real
 Ask: Yes
 Functions: ioObject
 Listing: Window
-WindowBounds: 763 72 603 603
+WindowBounds: 755 72 611 603
 CurrentView: io
 IOViewEdit: On
 Options:
@@ -2353,33 +2557,33 @@ Options:
 <MacGUI>
 ioView background {21845, 43690, 32639}
 ioText {7, 60} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 1
-ioText {70, 60} {48, 25} editnum 9.000000 1.000000 "n_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 9.000000
-ioText {120, 60} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {134, 60} {48, 25} editnum 8.000000 1.000000 "d_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 8.000000
-ioText {133, 90} {48, 25} editnum 4.000000 1.000000 "d_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 4.000000
-ioText {119, 90} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {69, 90} {48, 25} editnum 7.000000 1.000000 "n_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 7.000000
+ioText {70, 60} {48, 25} editnum 2.000000 1.000000 "n_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
+ioText {118, 60} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
+ioText {129, 60} {48, 25} editnum 1.000000 1.000000 "d_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
+ioText {129, 90} {48, 25} editnum 2.000000 1.000000 "d_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
+ioText {118, 90} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
+ioText {70, 90} {48, 25} editnum 3.000000 1.000000 "n_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 3.000000
 ioText {7, 90} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 2
-ioText {133, 120} {48, 25} editnum 2.000000 1.000000 "d_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
-ioText {119, 120} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {69, 120} {48, 25} editnum 3.000000 1.000000 "n_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 3.000000
+ioText {129, 120} {48, 25} editnum 3.000000 1.000000 "d_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 3.000000
+ioText {118, 120} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
+ioText {70, 120} {48, 25} editnum 4.000000 1.000000 "n_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 4.000000
 ioText {7, 120} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 3
 ioText {7, 150} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 4
-ioText {69, 150} {48, 25} editnum 1.000000 1.000000 "n_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
-ioText {119, 150} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {133, 150} {48, 25} editnum 1.000000 1.000000 "d_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
+ioText {70, 150} {48, 25} editnum 1.000000 1.000000 "n_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
+ioText {118, 150} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
+ioText {129, 150} {48, 25} editnum 1.000000 1.000000 "d_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioButton {69, 524} {100, 30} value 1.000000 "_Play" "Start" "/" i 3 0 -1
 ioButton {176, 524} {100, 30} event 1.000000 "btn_stop" "Stop" "/" i5 0 1
-ioText {71, 195} {120, 25} editnum 60.000000 0.001000 "base_freq" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 60.000000
+ioText {71, 195} {120, 25} editnum 97.993300 0.001000 "base_freq" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 97.993300
 ioText {7, 196} {65, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Base (Hz)
-ioMenu {69, 239} {114, 30} 9 303 "  Sine,  Saw 1,  Saw 2,  Square 1,  Square 2,  Prime 1,  Prime 2,  Fib 1,  Fib 2,  Asymptotic Saw" menu_waveform
+ioMenu {69, 239} {114, 30} 7 303 "  Sine,  Saw 1,  Saw 2,  Square 1,  Square 2,  Prime 1,  Prime 2,  Fib 1,  Fib 2,  Asymptotic Saw" menu_waveform
 ioText {7, 242} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wave
 ioText {389, 355} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Feedback
-ioText {205, 60} {35, 25} editnum 2.000000 1.000000 "8ve_1" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 2.000000
+ioText {205, 60} {35, 25} editnum 1.000000 1.000000 "8ve_1" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioText {205, 90} {35, 25} editnum 1.000000 1.000000 "8ve_2" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioText {205, 120} {35, 25} editnum 1.000000 1.000000 "8ve_3" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
 ioText {205, 150} {35, 25} editnum 1.000000 1.000000 "8ve_4" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
-ioText {101, 31} {50, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Ratio
+ioText {99, 31} {50, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Ratio
 ioText {205, 31} {35, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 8ve
 ioButton {270, 60} {50, 27} event 1.000000 "btn_on1" "On" "/" i 3.1 0 -1 1
 ioButton {270, 90} {50, 27} event 1.000000 "btn_on2" "On" "/" i 3.2 0 -1 2
@@ -2391,28 +2595,33 @@ ioButton {330, 120} {50, 27} event 1.000000 "btn_off3" "Off" "/" i 4 0 1 3
 ioButton {330, 150} {50, 27} event 1.000000 "btn_off4" "Off" "/" i 4 0 1 4
 ioText {206, 435} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder BPS
 ioText {215, 356} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Level
-ioKnob {283, 324} {80, 80} 1.000000 0.000000 0.010000 1.000000 bb_mix
+ioKnob {283, 324} {80, 80} 1.000000 0.000000 0.010000 0.000000 bb_mix
 ioMeter {389, 150} {24, 26} {0, 59904, 0} "disp_on_c4" 0.000000 "disp_on_c4" 0.000000 fill 1 0 mouse
 ioMeter {389, 121} {24, 26} {0, 59904, 0} "disp_on_c3" 0.000000 "disp_on_c3" 0.000000 fill 1 0 mouse
 ioMeter {389, 90} {24, 26} {0, 59904, 0} "disp_on_c2" 0.000000 "disp_on_c2" 0.000000 fill 1 0 mouse
 ioMeter {389, 61} {24, 26} {0, 59904, 0} "disp_on_c1" 0.000000 "disp_on_c1" 0.000000 fill 1 0 mouse
-ioKnob {456, 324} {80, 80} 1.000000 0.000000 0.010000 0.920000 reverb_feedback
+ioKnob {456, 324} {80, 80} 1.000000 0.000000 0.010000 0.860000 reverb_feedback
 ioText {68, 292} {130, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Harmonic Arpeggio
 ioText {395, 435} {42, 26} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wet
-ioText {456, 404} {80, 25} scroll 0.920000 0.001000 "feedback_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
-ioText {283, 404} {80, 25} scroll 1.000000 0.010000 "bb_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 1.00000000
-ioSlider {434, 435} {120, 25} 0.000000 1.000000 0.491667 reverb_level
+ioText {456, 404} {80, 25} scroll 0.860000 0.001000 "feedback_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
+ioText {283, 404} {80, 25} scroll 0.000000 0.010000 "bb_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
+ioSlider {434, 435} {120, 25} 0.000000 1.000000 0.516667 reverb_level
 ioText {554, 435} {46, 27} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Dry
-ioSlider {264, 435} {120, 25} 0.000000 50.000000 0.333333 bb_rate
+ioSlider {264, 435} {120, 25} 0.000000 50.000000 1.250000 bb_rate
 ioSlider {80, 435} {130, 25} 0.000000 1.000000 0.020000 risset_offset
 ioText {268, 292} {102, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Binaural Beats
 ioText {465, 292} {60, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Reverb
-ioText {70, 3} {270, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.6 - Dave Seidel <mysterybear.net/>
+ioText {70, 3} {270, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.7 - Dave Seidel <mysterybear.net/>
 ioText {99, 460} {90, 25} editnum 0.020000 0.010000 "risset_offset" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 0.020000
-ioText {278, 460} {95, 25} editnum 0.333333 0.001000 "bb_rate" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 0.333333
+ioText {278, 460} {95, 25} editnum 1.250000 0.001000 "bb_rate" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.250000
 ioText {21, 435} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Offset
-ioText {96, 404} {80, 25} scroll 1.000000 0.010000 "risset_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
-ioKnob {96, 324} {80, 80} 1.000000 0.000000 0.010000 1.000000 risset_mix
+ioText {96, 404} {80, 25} scroll 0.000000 0.010000 "risset_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
+ioKnob {96, 324} {80, 80} 1.000000 0.000000 0.010000 0.000000 risset_mix
 ioText {28, 357} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Level
+ioText {278, 195} {40, 25} editnum 6.000000 1.000000 "base_pch_int" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 6.000000
+ioText {327, 195} {40, 25} editnum 7.000000 1.000000 "base_pch_frac" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 7.000000
+ioMenu {373, 195} {43, 25} 7 303 " C, C#, D, D#, E, F, F#, G, G#, A, A#, B" base_pch_frac
+ioCheckbox {253, 198} {20, 20} on cb_use_notes
+ioText {188, 195} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Notes
+ioText {316, 195} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder .
 </MacGUI>
-<EventPanel name="" tempo="60.00000000" loop="8.00000000" x="126" y="152" width="655" height="346" visible="true" loopStart="0" loopEnd="0">    </EventPanel>
