@@ -1,1 +1,56 @@
-For more information, see http://mysterybear.net/article/51/drone-instrumentsruti-box-new-version
+;-------------------------------------------------------------------------
+; Drone Instrument/Sruti Box
+; by Dave Seidel <mysterybear.net/>
+; with contributions from joachim heintz
+; and Andres Cabrera.
+;
+; http://mysterybear.net/article/51/drone-instrumentsruti-box-new-version
+;
+; Written with Csound 5.12.1 (http://www.csounds.com)
+; and QuteCsound 0.6.0 (http://qutecsound.sourceforge.net/).
+;
+; To use, open in QuteCsound, make sure the Widgets window
+; is open, and click the Start button.  Then use On/Off
+; buttons to play or stop the drones.
+;
+; version 2.8 (xx-Oct-2010)
+;	- option to record session as WAV file
+;	- use vco2 for higher-quality saw, square, and (new) triangle waves;
+;	  still using poscil3 for other waves (factored sound-producing code
+;	  into a new UDO called "ogen")
+; version 2.7 (09-Oct-2010)
+;	- always play primary oscillator for each tone, independent of
+;	  harmonic arpeggio or binaural beat output
+;	- made all pitch controls (Ratio, 8ve, and Base) changeable in realtime
+;	- add option to tune base frequency to conventional (Western) pitches,
+;	  using pitch-class or note name 
+; version 2.6 (26-Sep-2010)
+;	- add level control for Risset effect (now labeled Harmonic Arpeggio);
+;	  this allows the use of binaural beating by itself
+;	- line up all effects horizontally
+;	- use SpinBox for Harmonic Arpeggio Offset and Binaural Beats BPS, for
+;	  finer control
+;	- normalize level controls to use 0.0-1.0 range
+;	- change multiplier for BB level from 5x to 4x, seems to match HA level better
+;	- layout tweakage
+; version 2.5 (12-Sep-2010)
+;	- add precision to the base freq. per David First
+; version 2.4 (12-Sep-2010)
+;	- bugfix from Mark Van Peteghem in the binauralize UDO
+; version 2.3 (10-Sep-2010)
+;	- fixes from Andres
+; version 2.2 (09-Sep-2010)
+;	- binaural beat and reverb controls
+;	- make Risset offset realtime
+; version 2.1 (06-Sep-2010)
+;	- fixed release on turnoff
+;	- better "on" indicators fron joachim
+;	- added binaural beating effect
+; version 2.0 (06-Sep-2010)
+;	- rewrite for QuteCsound
+;
+; Copyright 2005,2010, Dave Seidel. Some rights reserved.
+; This work is licensed under a Creative Commons
+; Attribution-Noncommercial 3.0 Unported License:
+; http://creativecommons.org/licenses/by-nc/3.0/
+;-------------------------------------------------------------------------
