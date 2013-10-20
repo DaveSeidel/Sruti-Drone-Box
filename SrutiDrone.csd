@@ -141,7 +141,7 @@ iSine	ftgenonce	$OGEN_SINE,	0, itabsz, 10, 1
 		; prime wave
 iPrime	ftgenonce	$OGEN_PRIME,	0, itabsz, 9,  1,1,0,  2,.5,0,  3,.3333,0,  5,.2,0,    7,.143,0,  11,.0909,0,  13,.077,0,   17,.0588,0,  19,.0526,0, 23,.0435,0, 27,.037,0
 		; Fibonacci wave
-iFib		ftgenonce	$OGEN_FIB,	0, itabsz, 9,  1,1,0,   2,.5,0,   3,.3333,0,  5,.2,0,   8,.125,0,  13,.0769,0,  21,.0476,0,  34,.0294,0,  55,.0182,0,  89,.0112,0 144,.0069,0
+iFib		ftgenonce	$OGEN_FIB,	0, itabsz, 9,  1,1,0,   2,.5,0,   3,.3333,0,  5,.2,0,   8,.125,0,  13,.0769,0,  21,.0476,0,  34,.0294,0,  55,.0182,0,  89,.0112,0, 144,.0069,0
 		; David First's asymptotic sawtooth wave
 iAsymp	ftgenonce	$OGEN_ASYMP,	0, itabsz, 9,  1,1,0,   1.732050807568877,.5773502691896259,0,   2.449489742783178,.408248290463863,0,   3.162277660168379,.3162277660168379,0,   3.872983346207417,.2581988897471611,0,   4.58257569495584,.2182178902359924,0,   5.291502622129182,.1889822365046136,0, 6,.1666666666666667,0,   6.70820393249937,.1490711984999859,0,   7.416198487095663,.1348399724926484,0,   8.124038404635961,.1230914909793327,0,   9.539392014169456,.1048284836721918,0,  10.2469507659596,.0975900072948533,0,  10.95445115010332,.0912870929175277,0,   11.6619037896906,.0857492925712544,0
 
@@ -430,7 +430,8 @@ i100 1 $A_LONG_TIME
 e
 
 </CsScore>
-</CsoundSynthesizer><bsbPanel>
+</CsoundSynthesizer>
+<bsbPanel>
  <label>Widgets</label>
  <objectName/>
  <x>755</x>
@@ -944,7 +945,7 @@ e
   <image>/</image>
   <eventLine>i5 0 1</eventLine>
   <latch>false</latch>
-  <latched>true</latched>
+  <latched>false</latched>
  </bsbObject>
  <bsbObject version="2" type="BSBSpinBox">
   <objectName>base_freq</objectName>
@@ -1303,7 +1304,7 @@ e
   <image>/</image>
   <eventLine>i 3.1 0 -1 1</eventLine>
   <latch>false</latch>
-  <latched>false</latched>
+  <latched>true</latched>
  </bsbObject>
  <bsbObject version="2" type="BSBButton">
   <objectName>btn_on2</objectName>
@@ -1360,7 +1361,7 @@ e
   <image>/</image>
   <eventLine>i 3.3 0 -1 3</eventLine>
   <latch>false</latch>
-  <latched>true</latched>
+  <latched>false</latched>
  </bsbObject>
  <bsbObject version="2" type="BSBButton">
   <objectName>btn_off1</objectName>
@@ -1436,7 +1437,7 @@ e
   <image>/</image>
   <eventLine>i 4 0 1 4</eventLine>
   <latch>false</latch>
-  <latched>true</latched>
+  <latched>false</latched>
  </bsbObject>
  <bsbObject version="2" type="BSBLabel">
   <objectName/>
@@ -2352,9 +2353,9 @@ e
    <b>0</b>
   </color>
   <bgcolor mode="nobackground">
-   <r>240</r>
-   <g>240</g>
-   <b>240</b>
+   <r>206</r>
+   <g>206</g>
+   <b>206</b>
   </bgcolor>
   <background>nobackground</background>
  </bsbObject>
@@ -2649,35 +2650,35 @@ Options:
 </MacOptions>
 <MacGUI>
 ioView background {21845, 43690, 32639}
-ioText {7, 60} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 1
-ioText {70, 60} {48, 25} editnum 63.000000 1.000000 "n_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 63.000000
-ioText {118, 60} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {129, 60} {48, 25} editnum 1.000000 1.000000 "d_1" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
-ioText {129, 90} {48, 25} editnum 1.000000 1.000000 "d_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
-ioText {118, 90} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {70, 90} {48, 25} editnum 61.000000 1.000000 "n_2" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 61.000000
-ioText {7, 90} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 2
-ioText {129, 120} {48, 25} editnum 1.000000 1.000000 "d_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
-ioText {118, 120} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {70, 120} {48, 25} editnum 33.000000 1.000000 "n_3" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 33.000000
-ioText {7, 120} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 3
-ioText {7, 150} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Drone 4
-ioText {70, 150} {48, 25} editnum 31.000000 1.000000 "n_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 31.000000
-ioText {118, 150} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder :
-ioText {129, 150} {48, 25} editnum 1.000000 1.000000 "d_4" center "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.000000
+ioText {7, 60} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Drone 1
+ioText {70, 60} {48, 25} editnum 63.000000 1.000000 "n_1" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 63.000000
+ioText {118, 60} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder :
+ioText {129, 60} {48, 25} editnum 1.000000 1.000000 "d_1" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 1.000000
+ioText {129, 90} {48, 25} editnum 1.000000 1.000000 "d_2" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 1.000000
+ioText {118, 90} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder :
+ioText {70, 90} {48, 25} editnum 61.000000 1.000000 "n_2" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 61.000000
+ioText {7, 90} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Drone 2
+ioText {129, 120} {48, 25} editnum 1.000000 1.000000 "d_3" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 1.000000
+ioText {118, 120} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder :
+ioText {70, 120} {48, 25} editnum 33.000000 1.000000 "n_3" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 33.000000
+ioText {7, 120} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Drone 3
+ioText {7, 150} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Drone 4
+ioText {70, 150} {48, 25} editnum 31.000000 1.000000 "n_4" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 31.000000
+ioText {118, 150} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder :
+ioText {129, 150} {48, 25} editnum 1.000000 1.000000 "d_4" center "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 1.000000
 ioButton {69, 524} {100, 30} value 1.000000 "_Play" "Start" "/" i 3 0 -1
 ioButton {176, 524} {100, 30} event 1.000000 "btn_stop" "Stop" "/" i5 0 1
-ioText {71, 195} {120, 25} editnum 30.866836 0.001000 "base_freq" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 30.866836
-ioText {7, 196} {65, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Base (Hz)
+ioText {71, 195} {120, 25} editnum 30.867000 0.001000 "base_freq" right "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 30.867000
+ioText {7, 196} {65, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Base (Hz)
 ioMenu {69, 239} {114, 30} 3 303 "  Sine,  Saw,  Square,  Triangle,  Prime,  Fibonacci,  Asymptotic Saw" menu_waveform
-ioText {7, 242} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wave
-ioText {389, 355} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Feedback
-ioText {205, 60} {35, 25} editnum -2.000000 1.000000 "8ve_1" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder -2.000000
-ioText {205, 90} {35, 25} editnum -2.000000 1.000000 "8ve_2" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder -2.000000
-ioText {205, 120} {35, 25} editnum -1.000000 1.000000 "8ve_3" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder -1.000000
-ioText {205, 150} {35, 25} editnum -1.000000 1.000000 "8ve_4" right "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder -1.000000
-ioText {99, 31} {50, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Ratio
-ioText {205, 31} {35, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 8ve
+ioText {7, 242} {55, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Wave
+ioText {389, 355} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Feedback
+ioText {205, 60} {35, 25} editnum -2.000000 1.000000 "8ve_1" right "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder -2.000000
+ioText {205, 90} {35, 25} editnum -2.000000 1.000000 "8ve_2" right "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder -2.000000
+ioText {205, 120} {35, 25} editnum -1.000000 1.000000 "8ve_3" right "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder -1.000000
+ioText {205, 150} {35, 25} editnum -1.000000 1.000000 "8ve_4" right "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder -1.000000
+ioText {99, 31} {50, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Ratio
+ioText {205, 31} {35, 25} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 8ve
 ioButton {270, 60} {50, 27} event 1.000000 "btn_on1" "On" "/" i 3.1 0 -1 1
 ioButton {270, 90} {50, 27} event 1.000000 "btn_on2" "On" "/" i 3.2 0 -1 2
 ioButton {270, 150} {50, 27} event 1.000000 "btn_on4" "On" "/" i 3.4 0 -1 4
@@ -2686,37 +2687,37 @@ ioButton {330, 60} {50, 27} event 1.000000 "btn_off1" "Off" "/" i 4 0 1 1
 ioButton {330, 90} {50, 27} event 1.000000 "btn_off2" "Off" "/" i 4 0 1 2
 ioButton {330, 120} {50, 27} event 1.000000 "btn_off3" "Off" "/" i 4 0 1 3
 ioButton {330, 150} {50, 27} event 1.000000 "btn_off4" "Off" "/" i 4 0 1 4
-ioText {206, 433} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder BPS
-ioText {215, 356} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Level
+ioText {206, 433} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder BPS
+ioText {215, 356} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Level
 ioKnob {283, 324} {80, 80} 1.000000 0.000000 0.010000 0.980000 bb_mix
 ioMeter {389, 150} {24, 26} {0, 59904, 0} "disp_on_c4" 0.000000 "disp_on_c4" 0.000000 fill 1 0 mouse
 ioMeter {389, 121} {24, 26} {0, 59904, 0} "disp_on_c3" 0.000000 "disp_on_c3" 0.000000 fill 1 0 mouse
 ioMeter {389, 90} {24, 26} {0, 59904, 0} "disp_on_c2" 0.000000 "disp_on_c2" 0.000000 fill 1 0 mouse
 ioMeter {389, 61} {24, 26} {0, 59904, 0} "disp_on_c1" 0.000000 "disp_on_c1" 0.000000 fill 1 0 mouse
 ioKnob {456, 324} {80, 80} 1.000000 0.000000 0.010000 0.950000 reverb_feedback
-ioText {68, 292} {130, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Harmonic Arpeggio
-ioText {395, 433} {42, 26} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Wet
+ioText {68, 292} {130, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Harmonic Arpeggio
+ioText {395, 433} {42, 26} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Wet
 ioText {456, 404} {80, 25} scroll 0.950000 0.001000 "feedback_display" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
 ioText {283, 404} {80, 25} scroll 0.980000 0.010000 "bb_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
 ioSlider {434, 433} {120, 25} 0.000000 1.000000 0.008333 reverb_level
-ioText {554, 433} {46, 27} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Dry
+ioText {554, 433} {46, 27} label 0.000000 0.00100 "" left "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Dry
 ioSlider {264, 433} {120, 25} 0.000000 50.000000 1.250000 bb_rate
 ioSlider {80, 433} {130, 25} 0.000000 1.000000 0.010000 risset_offset
-ioText {268, 292} {102, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Binaural Beats
-ioText {465, 292} {60, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Reverb
+ioText {268, 292} {102, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Binaural Beats
+ioText {465, 292} {60, 30} label 0.000000 0.00100 "" center "Arial" 14 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Reverb
 ioText {70, 3} {270, 25} label 0.000000 0.00100 "" center "Arial" 11 {65280, 65280, 65280} {0, 0, 0} nobackground noborder Sruti/Drone Box 2.8 - Dave Seidel <mysterybear.net/>
-ioText {99, 460} {90, 25} editnum 0.010000 0.010000 "risset_offset" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 0.010000
-ioText {278, 460} {95, 25} editnum 1.250000 0.001000 "bb_rate" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 1.250000
-ioText {21, 433} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Offset
+ioText {99, 460} {90, 25} editnum 0.010000 0.010000 "risset_offset" left "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 0.010000
+ioText {278, 460} {95, 25} editnum 1.250000 0.001000 "bb_rate" left "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 1.250000
+ioText {21, 433} {60, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Offset
 ioText {96, 404} {80, 25} scroll 1.000000 0.010000 "risset_mix" right "Arial" 13 {0, 65280, 0} {0, 0, 0} background noborder 
 ioKnob {96, 324} {80, 80} 1.000000 0.000000 0.010000 1.000000 risset_mix
-ioText {28, 357} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Level
-ioText {278, 195} {40, 25} editnum 4.000000 1.000000 "base_pch_int" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 4.000000
-ioText {327, 195} {40, 25} editnum 11.000000 1.000000 "base_pch_frac" left "" 0 {0, 0, 0} {61440, 61440, 61440} nobackground noborder 11.000000
+ioText {28, 357} {70, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Level
+ioText {278, 195} {40, 25} editnum 4.000000 1.000000 "base_pch_int" left "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 4.000000
+ioText {327, 195} {40, 25} editnum 11.000000 1.000000 "base_pch_frac" left "" 0 {0, 0, 0} {52736, 52736, 52736} nobackground noborder 11.000000
 ioMenu {373, 195} {43, 25} 11 303 " C, C#, D, D#, E, F, F#, G, G#, A, A#, B" base_pch_frac
 ioCheckbox {253, 198} {20, 20} on cb_use_notes
-ioText {188, 195} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Notes
-ioText {316, 195} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {61440, 61440, 61440} nobackground noborder .
+ioText {188, 195} {67, 25} label 0.000000 0.00100 "" right "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Notes
+ioText {316, 195} {11, 25} label 0.000000 0.00100 "" center "Arial" 13 {0, 0, 0} {52736, 52736, 52736} nobackground noborder .
 ioText {400, 526} {160, 25} edit 0.000000 0.00100 "rec_filename"  "Arial" 12 {0, 0, 0} {61440, 61440, 61440} falsenoborder 
-ioText {304, 520} {90, 40} label 0.000000 0.00100 "" center "Arial" 12 {0, 0, 0} {61440, 61440, 61440} nobackground noborder Output file¬(blank for none)
+ioText {304, 520} {90, 40} label 0.000000 0.00100 "" center "Arial" 12 {0, 0, 0} {52736, 52736, 52736} nobackground noborder Output fileÂ¬(blank for none)
 </MacGUI>
